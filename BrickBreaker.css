@@ -1,0 +1,31 @@
+#game {
+	position: absolute;
+	left: 100px;
+	top: 20px;
+	width: 200px;
+	height: 500px;
+	border: 1px solid red;
+}
+
+.brick {
+	position: absolute;
+	border: 1px solid black;
+}
+
+#ball {
+	width:5px;
+	height:5px;
+	position: absolute;
+	left:10px;
+	bottom: 50px;
+	background-color: blue;
+}
+
+#paddle {
+	position: absolute;
+	bottom: 0;
+	left: 20px;
+	width: 40px;
+	background-color: blue;
+	height: 20px;
+}

@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<link rel='stylesheet' type='text/css' href='/brickbreaker.css'/>		
+	</head>
+	<body>
+
+		<div id='game'>
+			<div id='ball'></div>
+			<div id='paddle'></div>
+		</div>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+					integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+				  crossorigin="anonymous"></script>
+
+  <script src='BrickBreaker.js'></script>
+  <script src='Brick.js'></script>
+  <script src='InitView.js'></script>
+  <script src='MovePaddleHandler.js'></script>
+
+  <script>
+
+  	$(function() {  		
+
+  		const game = new BrickBreaker(20, 20, 200, 500, 5, 10);
+  		InitView(game);
+
+  		const mouseMoveHandlers = (function() {
+  			const paddle = $('#paddle');
+  			const container = $('#game');
+  			const point = {'x': null, 'y': null};
+  			return [function(evt) { MovePaddleHandler(point, paddle, container, evt); },
+  							function() { point.x = null, point.y = null}]
+  		})();
+
+  		$(document).on('mousedown', function(evt) {
+	  		$(document).on('mousemove', mouseMoveHandlers[0]);
+  		});	
+
+  		$(document).on('mouseup', function(evt) {
+  			mouseMoveHandlers[1]();
+	  		$(document).off('mousemove', mouseMoveHandlers[0]);
+  		});	
+
+
+  		const moveBall = (function() {
+  			const ball = $('#ball');
+  			const container = $('#game');
+				const containerWidth = container.css('width').slice(0, -2);
+				const containerRight = Number(containerWidth); // left is zero b/c of relative positioning
+
+				let theta = Math.PI / 4;
+
+  			return function() {
+
+  				const currentX = Number(ball.css('left').slice(0, -2));
+  				const currentY = Number(ball.css('bottom').slice(0, -2));
+
+  				if (currentX + 1 < 0) return;
+  				if (currentX + 1 > containerRight) return;
+
+  				ball.css('left', String(currentX + 1) + 'px');
+  				ball.css('bottom', String(currentY + 1) + 'px');
+
+  			}
+  		})()
+
+	  	window.setInterval(moveBall, 10);
+
+  	});
+
+  </script>
+
+	</body>
+</html>
+
+
+
+
+
