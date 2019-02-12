@@ -54,12 +54,14 @@
 
 				let theta = Math.PI / 4;
         let vector = {
-          'velocity': 1,
+          'velocity': 2,
           'theta': 3.14 / 4,
-          'x': Math.cos(3.14 / 4),
-          'y': Math.sin(3.14 / 4)
+          'x': 2 * Math.cos(3.14 / 4),
+          'y': 2 * Math.sin(3.14 / 4),
+          'slope': Math.atan(1),
+          'b': Number(ball.css('bottom').slice(0, -2)) - 
+                Math.atan(1) * Number(ball.css('left').slice(0, -2))
         };
-
 
   			return function() {
 
@@ -69,27 +71,58 @@
           let impactedBrick = game.detectCollision(currentX, containerHeight - currentY);
 
           if (impactedBrick != null) {
-             $(`div[brick=${impactedBrick.id}]`).remove();
+            switch(impactedBrick.wallNearest(currentX, currentY, vector.slope, vector.b)) {
+              case -1:
+                console.log('wall impact error');
+                break;
+              case 1:
+                // bottom from below
+                vector.y *= -1 + (Math.random() - 0.5) / 4; 
+                break;
+              case 2:
+                // left wall from left
+                vector.x *= -1 + (Math.random() - 0.5) / 4; 
+                break;
+              case 3:
+                // top from above
+                vector.y *= -1 + (Math.random() - 0.5) / 4; 
+                break;
+              case 4:
+                // right wall from right
+                vector.x *= -1 + (Math.random() - 0.5) / 4; 
+                break;
+            }
+            vector.slope = Math.atan(vector.y / vector.x);
+            vector.b = currentY - Math.atan(1) * currentX;
+            $(`div[brick=${impactedBrick.id}]`).css('visibility', 'hidden');
           }
 
           // left wall collision
   				if (currentX + vector.x < 0) {            
             vector.x *= -1 + (Math.random() - 0.5) / 4; 
+            vector.slope = Math.atan(vector.y / vector.x);
+            vector.b = currentY - Math.atan(1) * currentX;
           }
 
           // right wall collision
           if (currentX + vector.x > containerRight) {
             vector.x *= -1 + (Math.random() - 0.5) / 4; 
+            vector.slope = Math.atan(vector.y / vector.x);
+            vector.b = currentY - Math.atan(1) * currentX;
           }
 
           // top wall collision
           if (currentY + vector.y > containerHeight) {
             vector.y *= -1 + (Math.random() - 0.5) / 4; 
+            vector.slope = Math.atan(vector.y / vector.x);
+            vector.b = currentY - Math.atan(1) * currentX;
           }
 
           // bottom wall collision
           if (currentY + vector.y < 0) {
             vector.y *= -1 + (Math.random() - 0.5) / 4; 
+            vector.slope = Math.atan(vector.y / vector.x);
+            vector.b = currentY - Math.atan(1) * currentX;
           }
 
   				ball.css('left', String(currentX + vector.x) + 'px');
