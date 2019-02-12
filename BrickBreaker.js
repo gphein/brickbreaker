@@ -4,6 +4,8 @@ const BrickBreaker = function(top, left, width, height, rows, cols) {
 
 	this.totalBricks = rows * cols;
 	this.bricks = [];
+	this.quadTree = new QuadTreeNode(left, left + width, top, top + height);
+
 	const brickWidth = width / cols;
 	const brickHeight = 20;
 
@@ -13,9 +15,8 @@ const BrickBreaker = function(top, left, width, height, rows, cols) {
 	for (let r = 0; r < rows; r++) {
 		for (let c = 0; c < cols; c++) {
 
-			
 			this.bricks.push(
-				new Brick(nextBrickLeft, nextBrickTop, brickWidth, brickHeight));
+				new Brick(this.bricks.length, nextBrickLeft, nextBrickTop, brickWidth, brickHeight));
 
 			nextBrickLeft += brickWidth;
 
@@ -26,4 +27,14 @@ const BrickBreaker = function(top, left, width, height, rows, cols) {
 
 	}
 
+};
+
+BrickBreaker.prototype.detectCollision = function(x, y) {
+
+	for (let k = 0; k < this.bricks.length; k++) {
+		if (this.bricks[k].containsPoint(x, y)) {
+			return this.bricks[k];
+		}
+	}
+	
 };

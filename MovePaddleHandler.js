@@ -3,7 +3,6 @@ const MovePaddleHandler = function(point, paddle, container, evt) {
 
 	let paddleLeft = Number(paddle.css('left').slice(0, -2));
 	let paddleWidth = Number(paddle.css('width').slice(0, -2));
-	const containerLeft = container.css('left').slice(0, -2);
 	const containerWidth = container.css('width').slice(0, -2);
 	const containerRight = Number(containerWidth); // left is zero b/c of relative positioning
 	

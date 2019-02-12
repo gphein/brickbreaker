@@ -101,8 +101,8 @@ QuadTreeNode.prototype.find = function(x, y) {
 
 };
 
-exports.QuantTreeNode = QuadTreeNode;
-module.exports = QuadTreeNode;
+// exports.QuantTreeNode = QuadTreeNode;
+// module.exports = QuadTreeNode;
 
 
 

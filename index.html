@@ -17,12 +17,13 @@
   <script src='Brick.js'></script>
   <script src='InitView.js'></script>
   <script src='MovePaddleHandler.js'></script>
+  <script src='QuadTreeNode.js'></script>
 
   <script>
 
   	$(function() {  		
 
-  		const game = new BrickBreaker(20, 20, 200, 500, 5, 10);
+  		const game = new BrickBreaker(20, 20, 300, 500, 5, 10);
   		InitView(game);
 
   		const mouseMoveHandlers = (function() {
@@ -44,25 +45,58 @@
 
 
   		const moveBall = (function() {
+
   			const ball = $('#ball');
   			const container = $('#game');
 				const containerWidth = container.css('width').slice(0, -2);
-				const containerRight = Number(containerWidth); // left is zero b/c of relative positioning
+        const containerRight = Number(containerWidth); // left is zero b/c of relative positioning
+				const containerHeight = Number(container.css('height').slice(0, -2));
 
 				let theta = Math.PI / 4;
+        let vector = {
+          'velocity': 1,
+          'theta': 3.14 / 4,
+          'x': Math.cos(3.14 / 4),
+          'y': Math.sin(3.14 / 4)
+        };
+
 
   			return function() {
 
   				const currentX = Number(ball.css('left').slice(0, -2));
   				const currentY = Number(ball.css('bottom').slice(0, -2));
 
-  				if (currentX + 1 < 0) return;
-  				if (currentX + 1 > containerRight) return;
+          let impactedBrick = game.detectCollision(currentX, containerHeight - currentY);
 
-  				ball.css('left', String(currentX + 1) + 'px');
-  				ball.css('bottom', String(currentY + 1) + 'px');
+          if (impactedBrick != null) {
+             $(`div[brick=${impactedBrick.id}]`).remove();
+          }
+
+          // left wall collision
+  				if (currentX + vector.x < 0) {            
+            vector.x *= -1 + (Math.random() - 0.5) / 4; 
+          }
+
+          // right wall collision
+          if (currentX + vector.x > containerRight) {
+            vector.x *= -1 + (Math.random() - 0.5) / 4; 
+          }
+
+          // top wall collision
+          if (currentY + vector.y > containerHeight) {
+            vector.y *= -1 + (Math.random() - 0.5) / 4; 
+          }
+
+          // bottom wall collision
+          if (currentY + vector.y < 0) {
+            vector.y *= -1 + (Math.random() - 0.5) / 4; 
+          }
+
+  				ball.css('left', String(currentX + vector.x) + 'px');
+  				ball.css('bottom', String(currentY + vector.y) + 'px');
 
   			}
+
   		})()
 
 	  	window.setInterval(moveBall, 10);

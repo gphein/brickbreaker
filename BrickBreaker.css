@@ -1,8 +1,8 @@
 #game {
 	position: absolute;
-	left: 100px;
+	left: 300px;
 	top: 20px;
-	width: 200px;
+	width: 300px;
 	height: 500px;
 	border: 1px solid red;
 }
