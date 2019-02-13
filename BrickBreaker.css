@@ -10,6 +10,7 @@
 .brick {
 	position: absolute;
 	border: 1px solid black;
+	background-image: linear-gradient(to bottom right, red, yellow);
 }
 
 #ball {
@@ -19,6 +20,7 @@
 	left:10px;
 	bottom: 50px;
 	background-color: blue;
+	border-radius: 5px;
 }
 
 #paddle {
@@ -27,5 +29,6 @@
 	left: 20px;
 	width: 40px;
 	background-color: blue;
-	height: 20px;
+	height: 10px;
+	border-radius: 10px
 }

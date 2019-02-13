@@ -8,12 +8,14 @@
 			<div id='ball'></div>
 			<div id='paddle'></div>
 		</div>
+    <div id='message'></div>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
 					integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
 				  crossorigin="anonymous"></script>
 
   <script src='BrickBreaker.js'></script>
+  <script src='Paddle.js'></script>
   <script src='Brick.js'></script>
   <script src='InitView.js'></script>
   <script src='MovePaddleHandler.js'></script>
@@ -23,24 +25,24 @@
 
   	$(function() {  		
 
-  		const game = new BrickBreaker(20, 20, 300, 500, 5, 10);
+  		const game = new BrickBreaker(20, 20, 300, 500, 5, 10, 20, 40, 10);
   		InitView(game);
 
   		const mouseMoveHandlers = (function() {
   			const paddle = $('#paddle');
   			const container = $('#game');
   			const point = {'x': null, 'y': null};
-  			return [function(evt) { MovePaddleHandler(point, paddle, container, evt); },
+  			return [function(evt) { MovePaddleHandler(game, point, paddle, container, evt); },
   							function() { point.x = null, point.y = null}]
   		})();
 
-  		$(document).on('mousedown', function(evt) {
-	  		$(document).on('mousemove', mouseMoveHandlers[0]);
+  		$(document).on('mousedown touchstart', function(evt) {
+	  		$(document).on('mousemove touchmove', mouseMoveHandlers[0]);
   		});	
 
-  		$(document).on('mouseup', function(evt) {
+  		$(document).on('mouseup touchend', function(evt) {
   			mouseMoveHandlers[1]();
-	  		$(document).off('mousemove', mouseMoveHandlers[0]);
+	  		$(document).off('mousemove touchmove', mouseMoveHandlers[0]);
   		});	
 
 
@@ -68,7 +70,7 @@
   				const currentX = Number(ball.css('left').slice(0, -2));
   				const currentY = Number(ball.css('bottom').slice(0, -2));
 
-          let impactedBrick = game.detectCollision(currentX, containerHeight - currentY);
+          let impactedBrick = game.detectBrickCollision(currentX, containerHeight - currentY);
 
           if (impactedBrick != null) {
             switch(impactedBrick.wallNearest(currentX, currentY, vector.slope, vector.b)) {
@@ -94,6 +96,7 @@
             }
             vector.slope = Math.atan(vector.y / vector.x);
             vector.b = currentY - Math.atan(1) * currentX;
+            impactedBrick.hide();
             $(`div[brick=${impactedBrick.id}]`).css('visibility', 'hidden');
           }
 
@@ -120,9 +123,16 @@
 
           // bottom wall collision
           if (currentY + vector.y < 0) {
+            $('#message').text('Game Over!');
+            window.clearInterval(gamePlayCallbackID);
+          }
+
+          const paddleHitPosition = game.paddle.detectPaddleCollision(currentX, currentY);
+
+          if (paddleHitPosition >= 0) {
             vector.y *= -1 + (Math.random() - 0.5) / 4; 
             vector.slope = Math.atan(vector.y / vector.x);
-            vector.b = currentY - Math.atan(1) * currentX;
+            vector.b = currentY - Math.atan(1) * currentX;            
           }
 
   				ball.css('left', String(currentX + vector.x) + 'px');
@@ -132,7 +142,7 @@
 
   		})()
 
-	  	window.setInterval(moveBall, 10);
+	  	const gamePlayCallbackID = window.setInterval(moveBall, 10);
 
   	});
 

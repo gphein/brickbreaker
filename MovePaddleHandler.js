@@ -1,5 +1,5 @@
 
-const MovePaddleHandler = function(point, paddle, container, evt) {
+const MovePaddleHandler = function(game, point, paddle, container, evt) {
 
 	let paddleLeft = Number(paddle.css('left').slice(0, -2));
 	let paddleWidth = Number(paddle.css('width').slice(0, -2));
@@ -14,8 +14,10 @@ const MovePaddleHandler = function(point, paddle, container, evt) {
 		if (newLeft < 0) newLeft = 0;
 		if (newRight > containerRight) newLeft = containerRight - paddleWidth;
 		paddle.css('left', String(newLeft) + 'px');
+		game.paddle.x = newLeft;
 		point.x = evt.pageX;
 	}
+
 
 };
 

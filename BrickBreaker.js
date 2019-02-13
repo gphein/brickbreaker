@@ -1,10 +1,12 @@
 'use const';
 
-const BrickBreaker = function(top, left, width, height, rows, cols) {
+const BrickBreaker = function(top, left, width, height, rows, cols, 
+															paddleLeft, paddleWidth, paddleHeight) {
 
 	this.totalBricks = rows * cols;
 	this.bricks = [];
 	this.quadTree = new QuadTreeNode(left, left + width, top, top + height);
+	this.paddle = new Paddle(paddleLeft, paddleWidth, paddleHeight);
 
 	const brickWidth = width / cols;
 	const brickHeight = 20;
@@ -29,12 +31,18 @@ const BrickBreaker = function(top, left, width, height, rows, cols) {
 
 };
 
-BrickBreaker.prototype.detectCollision = function(x, y) {
+BrickBreaker.prototype.detectBrickCollision = function(x, y) {
 
 	for (let k = 0; k < this.bricks.length; k++) {
-		if (this.bricks[k].containsPoint(x, y)) {
+		if (!this.bricks[k].isHidden && this.bricks[k].containsPoint(x, y)) {
 			return this.bricks[k];
 		}
 	}
 	
 };
+
+
+
+
+
+
