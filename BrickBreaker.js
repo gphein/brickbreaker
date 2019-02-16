@@ -1,31 +1,31 @@
 'use const';
 
-const BrickBreaker = function(top, left, width, height, rows, cols, 
+const BrickBreaker = function(containerHeight, containerWidth,
+															brickHeight, rows, cols, 
 															paddleLeft, paddleWidth, paddleHeight) {
 
 	this.totalBricks = rows * cols;
 	this.bricks = [];
-	this.quadTree = new QuadTreeNode(left, left + width, top, top + height);
+	this.quadTree = new QuadTreeNode(0, containerWidth, containerHeight, 0);
 	this.paddle = new Paddle(paddleLeft, paddleWidth, paddleHeight);
 
-	const brickWidth = width / cols;
-	const brickHeight = 20;
+	const brickWidth = containerWidth / cols;
 
-	let nextBrickLeft = left;
-	let nextBrickTop = top;
+	let nextBrickLeft = 0;
+	let nextBrickTop = containerHeight;
 
 	for (let r = 0; r < rows; r++) {
 		for (let c = 0; c < cols; c++) {
 
 			this.bricks.push(
-				new Brick(this.bricks.length, nextBrickLeft, nextBrickTop, brickWidth, brickHeight));
+				new Brick(this.bricks.length, nextBrickLeft, nextBrickTop - brickHeight, brickWidth, brickHeight));
 
 			nextBrickLeft += brickWidth;
 
 		}	
 
-		nextBrickLeft = left;
-		nextBrickTop += brickHeight; 
+		nextBrickLeft = 0;
+		nextBrickTop -= brickHeight; 
 
 	}
 

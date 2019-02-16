@@ -3,18 +3,20 @@
 const Brick = function(id, x, y, w, h) {
 
 	this.id = id;
-	this.x = x;
-	this.y = y;
-	this.w = w;
-	this.h = h;
+	this.left = x;
+	this.bottom = y;
+	this.width = w;
+	this.height = h;
+	this.right = this.left + this.width;
+	this.top = this.bottom + this.height;
 	this.isHidden = false;
 
 };
 
 Brick.prototype.containsPoint = function(x, y) {
 	
-	return this.x <= x && x <= (this.x + this.w) && 
-		this.y <= y && y <= (this.y + this.h);
+	return this.left <= x && x <= (this.right) && 
+		this.bottom <= y && y <= (this.top);
 
 };
 
@@ -25,40 +27,59 @@ Brick.prototype.hide = function() {
 
 };
 
-Brick.prototype.wallNearest = function(x, y, m, b) {
+Brick.prototype.wallNearest = function(x, y, xPrev, yPrev) {
 
 	// find the intersections of the brick boundary lines extended to infinity
 	// with the ball's vector line 
 
-	// bottom line
-	const x_b = (this.y + this.h - b) / m;
-	const y_b = (this.y + this.h);
+	const slope = (yPrev - y) / (xPrev - x);
+	const intersect = y - slope * x;
+
+	// bottom line	
+	const x_b = (this.bottom - intersect) / slope;
+	const y_b = (this.bottom);
 
 	// left line
-	const x_l = (this.x);
-	const y_l = (m * this.x + b);
+	const x_l = (this.left);
+	const y_l = (slope * this.left + intersect);
 
 	// top line
-	const x_t = (this.y - b) / m;
-	const y_t = (this.y);
+	const x_t = (this.bottom + this.height - intersect) / slope;
+	const y_t = (this.bottom + this.height);
 
 	// right line
-	const x_r = (this.x + this.w);
-	const y_r = (m * (this.x + this.w) + b);
-	
-	const distance_b = Math.sqrt(Math.pow(x - x_b, 2) + Math.pow(y - y_b, 2));
-	const distance_l = Math.sqrt(Math.pow(x - x_l, 2) + Math.pow(y - y_l, 2));
-	const distance_t = Math.sqrt(Math.pow(x - x_t, 2) + Math.pow(y - y_t, 2));
-	const distance_r = Math.sqrt(Math.pow(x - x_r, 2) + Math.pow(y - y_r, 2));
+	const x_r = (this.right);
+	const y_r = (slope * this.right + intersect);
 
-	const distance_min = Math.min(distance_b, distance_l, distance_t, distance_r);
+	// left bottom wall	
+	if (Math.min(x, xPrev) <= x_b && x_b <= Math.max(x, xPrev) &&
+			Math.min(y, yPrev) <= y_b && y_b <= Math.max(y, yPrev) &&
+			this.containsPoint(x_b, y_b)) {
+		return 1;
+	}
 
-	if (distance_min == distance_b) return 1;
-	if (distance_min == distance_l) return 2;
-	if (distance_min == distance_t) return 3;
-	if (distance_min == distance_r) return 4;
+	// left wall
+	if (Math.min(x, xPrev) <= x_l && x_l <= Math.max(x, xPrev) &&
+			Math.min(y, yPrev) <= y_l && y_l <= Math.max(y, yPrev) &&
+			this.containsPoint(x_l, y_l)) {
+		return 2;
+	}
 
-	return -1
+	// top wall
+	if (Math.min(x, xPrev) <= x_t && x_t <= Math.max(x, xPrev) &&
+			Math.min(y, yPrev) <= y_t && y_t <= Math.max(y, yPrev) &&
+			this.containsPoint(x_t, y_t)) {
+		return 3;
+	}
+
+	// right wall
+	if (Math.min(x, xPrev) <= x_r && x_r <= Math.max(x, xPrev) &&
+			Math.min(y, yPrev) <= y_r && y_r <= Math.max(y, yPrev) &&
+			this.containsPoint(x_r, y_r)) {
+		return 4;
+	}
+
+	return -1;
 
 };
 

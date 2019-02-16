@@ -4,14 +4,11 @@ const InitView = function(game) {
 
 	for (let k = 0; k < game.totalBricks; k++) {
 		gameDiv.append($(`<div brick='${game.bricks[k].id}' class='brick'></div>`).
-			css({'left': game.bricks[k].x - game.bricks[0].x,
-					'top': game.bricks[k].y - game.bricks[0].y,
-					'width': game.bricks[k].w,
-					'height': game.bricks[k].h
+			css({'left': game.bricks[k].left - game.bricks[0].left,
+					'bottom': game.bricks[k].bottom,
+					'width': game.bricks[k].width,
+					'height': game.bricks[k].height
 				}));
 	}
-
-	// const paddle = $('#paddle');
-	// paddle.
 
 };

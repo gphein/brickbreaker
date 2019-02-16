@@ -24,8 +24,8 @@
   <script>
 
   	$(function() {  		
-
-  		const game = new BrickBreaker(20, 20, 300, 500, 5, 10, 20, 40, 10);
+//containerHeight, containerWidth, brickHeight, rows, cols, paddleLeft, paddleWidth, paddleHeight
+  		const game = new BrickBreaker(400, 300, 20, 5, 10, 20, 40, 10);
   		InitView(game);
 
   		const mouseMoveHandlers = (function() {
@@ -54,28 +54,28 @@
         const containerRight = Number(containerWidth); // left is zero b/c of relative positioning
 				const containerHeight = Number(container.css('height').slice(0, -2));
 
-				let theta = Math.PI / 4;
-        let vector = {
+        const vector = {
           'velocity': 2,
-          'theta': 3.14 / 4,
           'x': 2 * Math.cos(3.14 / 4),
-          'y': 2 * Math.sin(3.14 / 4),
-          'slope': Math.atan(1),
-          'b': Number(ball.css('bottom').slice(0, -2)) - 
-                Math.atan(1) * Number(ball.css('left').slice(0, -2))
+          'y': 2 * Math.sin(3.14 / 4)
+        };
+
+        const prevPosition = {
+          'x': Number(ball.css('left').slice(0, -2)),
+          'y': Number(ball.css('bottom').slice(0, -2))
         };
 
   			return function() {
 
   				const currentX = Number(ball.css('left').slice(0, -2));
   				const currentY = Number(ball.css('bottom').slice(0, -2));
-
-          let impactedBrick = game.detectBrickCollision(currentX, containerHeight - currentY);
+          const impactedBrick = game.detectBrickCollision(currentX, currentY);
 
           if (impactedBrick != null) {
-            switch(impactedBrick.wallNearest(currentX, currentY, vector.slope, vector.b)) {
+
+            switch(impactedBrick.wallNearest(currentX, currentY, 
+                                        prevPosition.x, prevPosition.y)) {
               case -1:
-                console.log('wall impact error');
                 break;
               case 1:
                 // bottom from below
@@ -94,31 +94,24 @@
                 vector.x *= -1 + (Math.random() - 0.5) / 4; 
                 break;
             }
-            vector.slope = Math.atan(vector.y / vector.x);
-            vector.b = currentY - Math.atan(1) * currentX;
+            // window.clearInterval(gamePlayCallbackID);
             impactedBrick.hide();
             $(`div[brick=${impactedBrick.id}]`).css('visibility', 'hidden');
           }
 
           // left wall collision
-  				if (currentX + vector.x < 0) {            
+  				if (currentX + vector.x < 0) {
             vector.x *= -1 + (Math.random() - 0.5) / 4; 
-            vector.slope = Math.atan(vector.y / vector.x);
-            vector.b = currentY - Math.atan(1) * currentX;
           }
 
           // right wall collision
           if (currentX + vector.x > containerRight) {
             vector.x *= -1 + (Math.random() - 0.5) / 4; 
-            vector.slope = Math.atan(vector.y / vector.x);
-            vector.b = currentY - Math.atan(1) * currentX;
           }
 
           // top wall collision
           if (currentY + vector.y > containerHeight) {
             vector.y *= -1 + (Math.random() - 0.5) / 4; 
-            vector.slope = Math.atan(vector.y / vector.x);
-            vector.b = currentY - Math.atan(1) * currentX;
           }
 
           // bottom wall collision
@@ -130,11 +123,12 @@
           const paddleHitPosition = game.paddle.detectPaddleCollision(currentX, currentY);
 
           if (paddleHitPosition >= 0) {
-            vector.y *= -1 + (Math.random() - 0.5) / 4; 
-            vector.slope = Math.atan(vector.y / vector.x);
-            vector.b = currentY - Math.atan(1) * currentX;            
+            vector.y *= -1
+            vector.y += (1 + paddleHitPosition) * (Math.random() - 0.5) / 4; 
           }
 
+          prevPosition.x = currentX;
+          prevPosition.y = currentY;
   				ball.css('left', String(currentX + vector.x) + 'px');
   				ball.css('bottom', String(currentY + vector.y) + 'px');
 
